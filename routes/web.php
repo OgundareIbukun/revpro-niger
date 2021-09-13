@@ -141,6 +141,8 @@ Route::get('/service', 'ServiceController@listServices');
 Route::post('/service', 'ServiceController@store');
 Route::put('/service/{service}', 'ServiceController@update');
 Route::delete('/service/{service}', 'ServiceController@destroy');
+Route::get('/services/all','ServiceController@getServices');
+
 
 // Range in a service
 Route::get('/service/{service}/ranges', 'ServiceController@getRanges');

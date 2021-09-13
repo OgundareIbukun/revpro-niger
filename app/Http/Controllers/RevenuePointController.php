@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
  use App\Agent;
  use App\Revenue;
  use App\Lga;
- use App\User;
+use App\PointService;
+use App\User;
  use Illuminate\Support\Carbon;
  use Illuminate\Support\Facades\DB;
 
@@ -193,7 +194,6 @@ use Illuminate\Http\Request;
 
     public function listRevPoint()
     {
-
         $user =  Auth::user();
         $lga_id =  $user->lga_id;
         //  get revenue point for director of revenuE and HOD
@@ -229,6 +229,17 @@ use Illuminate\Http\Request;
           //  $data[$i]['state_id'] = $rvpt['lga']['state']['id'];
             $data[$i]['lga_id'] = $rvpt['lga']['id'];
             $data[$i]['lga_name'] = $rvpt['lga']['name'];
+            $services = PointService::where('revenue_point_id',$rvpt['id'])->pluck('service_id');
+            $service_details = [];
+
+            foreach($services as $service){
+                $service_details[] = [
+                    'key' => Service::where('id',$service)->first()->name,
+                    'value' => $service
+                ];
+
+            }
+            $data[$i]['services'] = $service_details;
             $i++;
 
         }
@@ -244,6 +255,7 @@ use Illuminate\Http\Request;
 
 
     }
+
 
 
     public  function getRevPointInLga(Request $request){

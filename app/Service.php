@@ -27,5 +27,10 @@ class Service extends Model
 
     }
 
+    public function revenue_point_service(){
+        return $this->belongsToMany(PointService::class);
+    }
+
+
 
 }
