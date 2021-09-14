@@ -135,12 +135,12 @@
             </div>
 
             <div class="panel panel-default">
-                <div class="panel-heading">FILTER RESULT </div>
+                <div  class="panel-heading">FILTER RESULT </div>
                 <div class="panel-body">
                     <div class="row clearfix">
                         <form   v-on:submit.prevent="searchResult">
 
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div v-if="isAdmin" class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                 <select    v-model="lga_id" class="form-control"  >
                                     <option value=""  >Select LGA</option>
                                     <option v-for="lga in  lgas" v-bind:key="lga.id" v-bind:value="lga.id">
@@ -519,6 +519,7 @@
                 table_2: false,
                 table_3: true,
                 absolute: true,
+                isAdmin: false,
 
 
 //                page: 1,
@@ -944,10 +945,16 @@
             },
             getLgas: async function(){
                 try{
+                    // this.lga_id
                     await axios.get(`/state/${this.$state_id}/lgas`)
                         .then( response => {
-                            this.lgas = response.data.data
-
+                            this.lgas = response.data.data;
+                            if(this.lgas.length == 1){
+                                this.lga = this.lgas[0];
+                                this.searchResult();
+                            }else{
+                                this.isAdmin = true;
+                            }
 
                         })
                         .catch( (error) => {
@@ -957,7 +964,6 @@
                     console.log(e);
                 }
             },
-
 
 
         },

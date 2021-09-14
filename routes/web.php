@@ -263,7 +263,7 @@ Route::get('/banks', function(){
  //Lgas
  Route::get('/state/{state}/lgas', function (\App\State $state) {
 
-      $user = Auth::user();
+    $user = Auth::user();
       if($user->role_id == env('DIR_REVENUE') || $user->role_id == env('HOD') ){
          $lga_id= $user->lga_id;
           $lgas = $state->lgas() ->where('id','=', $lga_id)
@@ -273,8 +273,10 @@ Route::get('/banks', function(){
         $lgas = $state->lgas()->get();
     }
     else{
-        $lgas = $state->lgas()->get();
+        $lgas = $state->lgas()->where('id',$lga_id= $user->lga_id)->get();
     }
+
+
 
 
      Route::get('/lga', 'UserController@getLga');

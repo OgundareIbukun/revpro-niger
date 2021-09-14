@@ -12,114 +12,131 @@ class settlementController extends Controller
 {
     //
 
-          function index(){
+    function index(Request $request){
 
-                  // get paid invoices at bank and card
-              $Bs= Revenue::select('amount','payment_type','updated_at')
-                  ->where('status','success')
-                  ->where(function($query){
-                      $query->where('payment_type','bank')
-                             ->orWhere('payment_type','card');
-                  })
-                  ->get();
+        // get paid invoices at bank and card
+  //dd($request->lga_id);
 
-                       // get paid invoices at bank and card by agents
-              $Remits = Remittance::select('amount','payment_type','updated_at')
-                  ->where('status','success')
-                  ->where(function($query){
-                      $query->where('payment_type','bank')
-                          ->orWhere('payment_type','card');
-                  })
-                  ->get();
+  $lga_id = $request->lga_id;
 
+    $Bs= Revenue::select('revenues.amount','revenues.payment_type','revenues.updated_at')
+          ->when($request->lga_id,function($query) use ($lga_id){
+              return  $query->join('revenue_points','revenues.revenue_point_id','=','revenue_points.id')
+                      ->join('lgas','revenue_points.lga_id','=','lgas.id')
+                      ->where('lgas.id','=',$lga_id);
 
-              $dateRanges = $this->dateRange(env('START_REV_MONTH'), date('Y-m'));
-              $dateRanges =   array_reverse($dateRanges);
+          })
+        ->where('status','success')
+        ->where(function($query){
+            $query->where('payment_type','bank')
+                   ->orWhere('payment_type','card');
+        })
 
-                 $data = array();
-                      $i=0;
-                   foreach( $dateRanges as $dateRange){
-
-                       $card = $bank = 0;
-                        $cardTxnFee = $bankTxnFee = $cardSettlement = $bankSettlement = $totalSettlement = '';
-                       $year =   substr($dateRange,0,4);
-                         $month = substr($dateRange,5);
+        ->get();
 
 
-                       $monthName = Carbon::parse($dateRange)->format('F');
-                       $data[$i]['sn'] = $i+1;
-                      $data[$i]['month'] = $monthName.','.$year;
+
+             // get paid invoices at bank and card by agents
+    $Remits = Remittance::select('remittances.amount','remittances.payment_type','remittances.updated_at')
+          ->when($request->lga_id, function($query) use ($lga_id){
+              return $query->join('lgas','remittances.lga_id','=','lgas.id')
+              ->where('remittances.lga_id',$lga_id);
+          })
+        ->where('status','success')
+        ->where(function($query){
+            $query->where('payment_type','bank')
+                ->orWhere('payment_type','card');
+        })
+        ->get();
 
 
-                          foreach($Bs as $bs){
 
-                              if($month == substr($bs['updated_at'],5,2)  &&   $year == substr($bs['updated_at'],0,4))
-                              {
-                                     if($bs['payment_type'] == 'card' )
-                                         $card = $card + $bs['amount'];
-                                       else if($bs['payment_type'] == 'bank' )
-                                           $bank = $bank + $bs['amount'];
-                              }
+    $dateRanges = $this->dateRange(env('START_REV_MONTH'), date('Y-m'));
+    $dateRanges =   array_reverse($dateRanges);
 
-                          }
+       $data = array();
+            $i=0;
+         foreach( $dateRanges as $dateRange){
 
-                       foreach($Remits as $remit){
-
-                           if($month == substr($remit['updated_at'],5,2)  &&   $year == substr($remit['updated_at'],0,4))
-                           {
-                               if($remit['payment_type'] == 'card' )
-                                   $card = $card + $remit['amount'];
-                               else if($remit['payment_type'] == 'bank' )
-                                   $bank = $bank + $remit['amount'];
-                           }
-
-                       }
+             $card = $bank = 0;
+              $cardTxnFee = $bankTxnFee = $cardSettlement = $bankSettlement = $totalSettlement = '';
+             $year =   substr($dateRange,0,4);
+               $month = substr($dateRange,5);
 
 
-                       // card  txn fee
-
-                          if( $card <= 2500 )
-                              $cardTxnFee = ( 1.5 / 100)* $card;
-                           else if( $card > 2500 )
-                               $cardTxnFee =  100 + (( 1.5 / 100)*$card);
-
-                           // bank txn fee
-                             $bankTxnFee = ( 1.5 / 100)* $bank;
-
-                              $cardTxnFee = round($cardTxnFee,2);
-                             $bankTxnFee = round($bankTxnFee,2);
-
-                              $totalTxnFee = $cardTxnFee + $bankTxnFee;
-
-                              $cardSettlement = $card  - $cardTxnFee;
-                       $bankSettlement = $bank  - $bankTxnFee;
-                          $totalSettlement = $bankSettlement + $cardSettlement;
-                       $totalSettlement = round($totalSettlement,2);
+             $monthName = Carbon::parse($dateRange)->format('F');
+             $data[$i]['sn'] = $i+1;
+            $data[$i]['month'] = $monthName.','.$year;
 
 
-                       $data[$i]['cardTxn'] = $card;
-                       $data[$i]['bankTxn'] = $bank;
-                       $data[$i]['cardTxnFee'] = $cardTxnFee;
-                       $data[$i]['bankTxnFee'] = $bankTxnFee;
-                       $data[$i]['totalTxnFee'] = $totalTxnFee;
-                       $data[$i]['cardSettlement'] = $cardSettlement;
-                       $data[$i]['bankSettlement'] = $bankSettlement;
-                       $data[$i]['totalSettlement'] = $totalSettlement;
+                foreach($Bs as $bs){
 
-                  $i++;
+                    if($month == substr($bs['updated_at'],5,2)  &&   $year == substr($bs['updated_at'],0,4))
+                    {
+                           if($bs['payment_type'] == 'card' )
+                               $card = $card + $bs['amount'];
+                             else if($bs['payment_type'] == 'bank' )
+                                 $bank = $bank + $bs['amount'];
+                    }
 
-                   }
+                }
 
-              return response()->json([
-                  'status' => 'success',
-                  'data' => [
-                      'settlement' => $data
+             foreach($Remits as $remit){
 
-                  ]
-                  ]);
+                 if($month == substr($remit['updated_at'],5,2)  &&   $year == substr($remit['updated_at'],0,4))
+                 {
+                     if($remit['payment_type'] == 'card' )
+                         $card = $card + $remit['amount'];
+                     else if($bs['payment_type'] == 'bank' )
+                         $bank = $bank + $remit['amount'];
+                 }
 
-          }
+             }
 
+
+             // card  txn fee
+
+                if( $card <= 2500 )
+                    $cardTxnFee = ( 1.5 / 100)* $card;
+                 else if( $card > 2500 )
+                     $cardTxnFee =  100 + (( 1.5 / 100)*$card);
+
+                 // bank txn fee
+                   $bankTxnFee = ( 1.5 / 100)* $bank;
+
+                    $cardTxnFee = round($cardTxnFee,2);
+                   $bankTxnFee = round($bankTxnFee,2);
+
+                    $totalTxnFee = $cardTxnFee + $bankTxnFee;
+
+                    $cardSettlement = $card  - $cardTxnFee;
+             $bankSettlement = $bank  - $bankTxnFee;
+                $totalSettlement = $bankSettlement + $cardSettlement;
+             $totalSettlement = round($totalSettlement,2);
+
+
+             $data[$i]['cardTxn'] = $card;
+             $data[$i]['bankTxn'] = $bank;
+             $data[$i]['cardTxnFee'] = $cardTxnFee;
+             $data[$i]['bankTxnFee'] = $bankTxnFee;
+             $data[$i]['totalTxnFee'] = $totalTxnFee;
+             $data[$i]['cardSettlement'] = $cardSettlement;
+             $data[$i]['bankSettlement'] = $bankSettlement;
+             $data[$i]['totalSettlement'] = $totalSettlement;
+
+        $i++;
+
+         }
+
+    return response()->json([
+        'status' => 'success',
+        'data' => [
+            'settlement' => $data
+
+        ]
+        ]);
+
+}
 
 
 

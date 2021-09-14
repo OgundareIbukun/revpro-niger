@@ -171,6 +171,83 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //  import 'bootstrap/dist/css/bootstrap.css';
 // import this component
 
@@ -178,10 +255,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Settlement",
+  components: {
+    flatPickr: vue_flatpickr_component__WEBPACK_IMPORTED_MODULE_1___default.a
+  },
   data: function data() {
     return {
       table_1: true,
       absolute: true,
+      isAdmin: false,
       page: 1,
       pageCount: 0,
       itemsPerPage: 10,
@@ -263,7 +344,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 _context.prev = 0;
                 _context.next = 3;
-                return axios.get('/settlement').then(function (response) {
+                return axios.get('/settlement?lga_id=' + this.lga_id).then(function (response) {
                   if (response.data.status == 'success') {
                     // this.metrics.unpaid_invoice = response.data.data.unpaid_invoice;
                     _this.settlement = response.data.data.settlement;
@@ -293,7 +374,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context.stop();
             }
           }
-        }, _callee, null, [[0, 5]]);
+        }, _callee, this, [[0, 5]]);
       }));
 
       function getSettlement() {
@@ -301,10 +382,58 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       }
 
       return getSettlement;
+    }(),
+    getLgas: function () {
+      var _getLgas = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
+        var _this2 = this;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
+                _context2.next = 3;
+                return axios.get("/state/".concat(this.$state_id, "/lgas")).then(function (response) {
+                  _this2.lgas = response.data.data;
+
+                  if (_this2.lgas.length == 1) {
+                    _this2.lga_id = _this2.lgas[0]; // console.log(this.lgas[0]['id'])
+                  } else {
+                    _this2.isAdmin = true;
+                  } // console.log(this.lgas);
+
+
+                  _this2.getSettlement();
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 3:
+                _context2.next = 8;
+                break;
+
+              case 5:
+                _context2.prev = 5;
+                _context2.t0 = _context2["catch"](0);
+                console.log(_context2.t0);
+
+              case 8:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 5]]);
+      }));
+
+      function getLgas() {
+        return _getLgas.apply(this, arguments);
+      }
+
+      return getLgas;
     }()
   },
   mounted: function mounted() {
-    this.getSettlement();
+    this.getLgas();
   }
 });
 
@@ -326,8 +455,155 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
+    _c("div", { staticClass: "panel panel-default" }, [
+      _c("div", { staticClass: "panel-heading" }, [_vm._v("FILTER RESULT ")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "panel-body" }, [
+        _c("div", { staticClass: "row clearfix" }, [
+          _c(
+            "form",
+            {
+              on: {
+                submit: function($event) {
+                  $event.preventDefault()
+                  return _vm.getSettlement($event)
+                }
+              }
+            },
+            [
+              _vm.isAdmin
+                ? _c(
+                    "div",
+                    { staticClass: "col-lg-3 col-md-3 col-sm-6 col-xs-12" },
+                    [
+                      _c(
+                        "select",
+                        {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.lga_id,
+                              expression: "lga_id"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          on: {
+                            change: function($event) {
+                              var $$selectedVal = Array.prototype.filter
+                                .call($event.target.options, function(o) {
+                                  return o.selected
+                                })
+                                .map(function(o) {
+                                  var val = "_value" in o ? o._value : o.value
+                                  return val
+                                })
+                              _vm.lga_id = $event.target.multiple
+                                ? $$selectedVal
+                                : $$selectedVal[0]
+                            }
+                          }
+                        },
+                        [
+                          _c("option", { attrs: { value: "" } }, [
+                            _vm._v("Select LGA")
+                          ]),
+                          _vm._v(" "),
+                          _vm._l(_vm.lgas, function(lga) {
+                            return _c(
+                              "option",
+                              { key: lga.id, domProps: { value: lga.id } },
+                              [
+                                _vm._v(
+                                  "\n                                    " +
+                                    _vm._s(lga.name) +
+                                    "\n                                "
+                                )
+                              ]
+                            )
+                          })
+                        ],
+                        2
+                      )
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "col-lg-3 col-md-3 col-sm-6 col-xs-12" },
+                [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c(
+                      "div",
+                      { staticClass: "input-group" },
+                      [
+                        _vm._m(0),
+                        _vm._v(" "),
+                        _c("flat-pickr", {
+                          staticClass: "form-control",
+                          attrs: {
+                            config: _vm.config,
+                            placeholder: "FROM DATE",
+                            name: "date"
+                          },
+                          model: {
+                            value: _vm.fromDate,
+                            callback: function($$v) {
+                              _vm.fromDate = $$v
+                            },
+                            expression: "fromDate"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "col-lg-3 col-md-3 col-sm-6 col-xs-12" },
+                [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c(
+                      "div",
+                      { staticClass: "input-group" },
+                      [
+                        _vm._m(1),
+                        _vm._v(" "),
+                        _c("flat-pickr", {
+                          staticClass: "form-control",
+                          attrs: {
+                            config: _vm.config,
+                            placeholder: "TO DATE",
+                            name: "date"
+                          },
+                          model: {
+                            value: _vm.toDate,
+                            callback: function($$v) {
+                              _vm.toDate = $$v
+                            },
+                            expression: "toDate"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ])
+                ]
+              ),
+              _vm._v(" "),
+              _vm._m(2)
+            ]
+          )
+        ])
+      ])
+    ]),
+    _vm._v(" "),
     _c("div", { staticClass: "page-heading" }, [
-      _vm._m(0),
+      _vm._m(3),
       _vm._v(" "),
       _c("ol", { staticClass: "breadcrumb" }, [
         _c(
@@ -630,6 +906,74 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-btn" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-default",
+          attrs: { type: "button", title: "Toggle", "data-toggle": "" }
+        },
+        [
+          _c("i", { staticClass: "fa fa-calendar" }, [
+            _c(
+              "span",
+              { staticClass: "sr-only", attrs: { "aria-hidden": "true" } },
+              [_vm._v("Toggle")]
+            )
+          ])
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "input-group-btn" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-default",
+          attrs: { type: "button", title: "Toggle", "data-toggle": "" }
+        },
+        [
+          _c("i", { staticClass: "fa fa-calendar" }, [
+            _c(
+              "span",
+              { staticClass: "sr-only", attrs: { "aria-hidden": "true" } },
+              [_vm._v("Toggle")]
+            )
+          ])
+        ]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-lg-2 col-md-2 col-sm-6 col-xs-12" }, [
+      _c("div", { staticClass: "form-group" }, [
+        _c(
+          "button",
+          {
+            staticClass: "m-t-8 btn btn-primary btn-md",
+            attrs: { type: "submit" }
+          },
+          [
+            _vm._v(
+              "\n                                    Filter\n                                    "
+            ),
+            _c("i", { staticClass: "fa fa-search" })
+          ]
+        )
+      ])
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
