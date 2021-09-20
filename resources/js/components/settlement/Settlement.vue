@@ -246,11 +246,20 @@
                 table_1:true,
                 absolute: true,
                 isAdmin:false,
+                fromDate:'',
+                toDate:'',
 
                 page: 1,
                 pageCount: 0,
                 itemsPerPage: 10,
                 search:'',
+                config: {
+                    wrap: true, // set wrap to true only when using 'input-group'
+                    altFormat: 'M j, Y',
+                    altInput: true,
+                    dateFormat: 'Y-m-d',
+
+                },
                 Headers: [
 
                     { text: '#', value: 'sn' },
@@ -293,7 +302,7 @@
             getSettlement: async function(){
 
                 try{
-                    await axios.get('/settlement?lga_id='+this.lga_id)
+                    await axios.get('/settlement?lga_id='+this.lga_id+'&fromDate='+this.fromDate+'&toDate='+this.toDate)
                         .then( response => {
                             if(response.data.status == 'success'){
                                 // this.metrics.unpaid_invoice = response.data.data.unpaid_invoice;

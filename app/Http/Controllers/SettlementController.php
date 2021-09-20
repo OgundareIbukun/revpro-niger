@@ -18,6 +18,8 @@ class settlementController extends Controller
   //dd($request->lga_id);
 
   $lga_id = $request->lga_id;
+  $fromDate = $request->fromDate;
+  $toDate = $request->toDate;
 
     $Bs= Revenue::select('revenues.amount','revenues.payment_type','revenues.updated_at')
           ->when($request->lga_id,function($query) use ($lga_id){
@@ -30,6 +32,10 @@ class settlementController extends Controller
         ->where(function($query){
             $query->where('payment_type','bank')
                    ->orWhere('payment_type','card');
+        })
+        ->when((($fromDate != null) && ($toDate !=null)),function($query) use($fromDate,$toDate){
+            return $query->where('revenues.created_at','>=',$fromDate)
+                ->where('revenues.created_at','<=',$toDate);
         })
 
         ->get();

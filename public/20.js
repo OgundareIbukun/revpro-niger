@@ -263,10 +263,19 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       table_1: true,
       absolute: true,
       isAdmin: false,
+      fromDate: '',
+      toDate: '',
       page: 1,
       pageCount: 0,
       itemsPerPage: 10,
       search: '',
+      config: {
+        wrap: true,
+        // set wrap to true only when using 'input-group'
+        altFormat: 'M j, Y',
+        altInput: true,
+        dateFormat: 'Y-m-d'
+      },
       Headers: [{
         text: '#',
         value: 'sn'
@@ -344,7 +353,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 _context.prev = 0;
                 _context.next = 3;
-                return axios.get('/settlement?lga_id=' + this.lga_id).then(function (response) {
+                return axios.get('/settlement?lga_id=' + this.lga_id + '&fromDate=' + this.fromDate + '&toDate=' + this.toDate).then(function (response) {
                   if (response.data.status == 'success') {
                     // this.metrics.unpaid_invoice = response.data.data.unpaid_invoice;
                     _this.settlement = response.data.data.settlement;
