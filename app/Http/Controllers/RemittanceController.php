@@ -812,7 +812,7 @@ echo $response;
 
     // store or update  full payment via bank
     function   storePayment($agent_id,$month,$amount){
-
+        
 
         if(request()->status == 0){
 
@@ -839,7 +839,7 @@ echo $response;
         }
         else if(request()->status == 1){
 
-
+            
             DB::beginTransaction();
             try {
 
@@ -852,7 +852,7 @@ echo $response;
                         'message' => 'transaction has updated before'
                     ]);
                 }
-
+                
 //
 //                $remit->update([
 //                    'status' => 'success',
@@ -884,12 +884,13 @@ echo $response;
    						 "Accept: application/json"
                     ),
                 ));
+                
 
                 $response = curl_exec($curl);
 
                 $err = curl_error($curl);
                 curl_close($curl);
-
+                
                 if ($err) {
                     return response()->json([
                         'status' => 'error',
