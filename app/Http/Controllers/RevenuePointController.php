@@ -230,15 +230,21 @@ use App\User;
             $data[$i]['lga_id'] = $rvpt['lga']['id'];
             $data[$i]['lga_name'] = $rvpt['lga']['name'];
             $services = PointService::where('revenue_point_id',$rvpt['id'])->pluck('service_id');
-            dd($services);
+            
             
             $service_details = [];
             if(!empty($services)){
                 foreach($services as $service){
-                    $service_details[] = [
-                        'key' => Service::where('id',$service)->first()->name,
-                        'value' => $service
-                    ];
+                    $query = Service::where('id',$service);
+
+                    if($query->exists()){
+                      $serv =  $query->first(); 
+                        $service_details[] = [
+                            'key' => $serv->name,
+                            'value' => $service
+                        ];
+                    }
+
     
                 }
             }
