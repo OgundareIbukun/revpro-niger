@@ -1,6 +1,21 @@
 <template>
 
     <div>
+        
+        <div class="page-heading">
+            <h1><small> Settlement Details</small><br>SETTLEMENT MANAGEMENT</h1>
+            <ol class="breadcrumb">
+                <li>
+                    <router-link to="/" exact>
+                        <i class="fa fa-dashboard"> </i>
+                        <span class="nav-label">Revops</span>
+                    </router-link>
+                </li>
+                <li class="active">Settlement Details</li>
+                <li class="active">Overview</li>
+            </ol>
+        </div>
+
         <div class="panel panel-default">
                 <div class="panel-heading">FILTER RESULT </div>
                 <div class="panel-body">
@@ -78,19 +93,6 @@
 
                 </div>
             </div>
-        <div class="page-heading">
-            <h1><small> Settlement Details</small><br>SETTLEMENT MANAGEMENT</h1>
-            <ol class="breadcrumb">
-                <li>
-                    <router-link to="/" exact>
-                        <i class="fa fa-dashboard"> </i>
-                        <span class="nav-label">Revops</span>
-                    </router-link>
-                </li>
-                <li class="active">Settlement Details</li>
-                <li class="active">Overview</li>
-            </ol>
-        </div>
 
         <div class="page-body">
 

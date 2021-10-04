@@ -248,6 +248,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
 //  import 'bootstrap/dist/css/bootstrap.css';
 // import this component
 
@@ -464,6 +466,28 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
+    _c("div", { staticClass: "page-heading" }, [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("ol", { staticClass: "breadcrumb" }, [
+        _c(
+          "li",
+          [
+            _c("router-link", { attrs: { to: "/", exact: "" } }, [
+              _c("i", { staticClass: "fa fa-dashboard" }),
+              _vm._v(" "),
+              _c("span", { staticClass: "nav-label" }, [_vm._v("Revops")])
+            ])
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c("li", { staticClass: "active" }, [_vm._v("Settlement Details")]),
+        _vm._v(" "),
+        _c("li", { staticClass: "active" }, [_vm._v("Overview")])
+      ])
+    ]),
+    _vm._v(" "),
     _c("div", { staticClass: "panel panel-default" }, [
       _c("div", { staticClass: "panel-heading" }, [_vm._v("FILTER RESULT ")]),
       _vm._v(" "),
@@ -547,7 +571,7 @@ var render = function() {
                       "div",
                       { staticClass: "input-group" },
                       [
-                        _vm._m(0),
+                        _vm._m(1),
                         _vm._v(" "),
                         _c("flat-pickr", {
                           staticClass: "form-control",
@@ -580,7 +604,7 @@ var render = function() {
                       "div",
                       { staticClass: "input-group" },
                       [
-                        _vm._m(1),
+                        _vm._m(2),
                         _vm._v(" "),
                         _c("flat-pickr", {
                           staticClass: "form-control",
@@ -604,32 +628,10 @@ var render = function() {
                 ]
               ),
               _vm._v(" "),
-              _vm._m(2)
+              _vm._m(3)
             ]
           )
         ])
-      ])
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "page-heading" }, [
-      _vm._m(3),
-      _vm._v(" "),
-      _c("ol", { staticClass: "breadcrumb" }, [
-        _c(
-          "li",
-          [
-            _c("router-link", { attrs: { to: "/", exact: "" } }, [
-              _c("i", { staticClass: "fa fa-dashboard" }),
-              _vm._v(" "),
-              _c("span", { staticClass: "nav-label" }, [_vm._v("Revops")])
-            ])
-          ],
-          1
-        ),
-        _vm._v(" "),
-        _c("li", { staticClass: "active" }, [_vm._v("Settlement Details")]),
-        _vm._v(" "),
-        _c("li", { staticClass: "active" }, [_vm._v("Overview")])
       ])
     ]),
     _vm._v(" "),
@@ -919,6 +921,16 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
+    return _c("h1", [
+      _c("small", [_vm._v(" Settlement Details")]),
+      _c("br"),
+      _vm._v("SETTLEMENT MANAGEMENT")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
     return _c("div", { staticClass: "input-group-btn" }, [
       _c(
         "button",
@@ -981,16 +993,6 @@ var staticRenderFns = [
           ]
         )
       ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("h1", [
-      _c("small", [_vm._v(" Settlement Details")]),
-      _c("br"),
-      _vm._v("SETTLEMENT MANAGEMENT")
     ])
   }
 ]

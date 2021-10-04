@@ -714,13 +714,14 @@
                         if(response.data.status === 'success'){
 
                             // metrics
+                            // console.log(response);
 
                             this.metrics.totalGenerated = response.data.data.totalReceipt;   this.card_1 = false;
                             this.metrics.totalBank = response.data.data.bank;  this.card_2 = false;
                             this.metrics.overall = response.data.data.overall;    this.card_3 = false;
+                            // this.metrics.overall = 0;
                             this.metrics.agent = response.data.data.agent;    this.card_4 = false;
-
-
+                            
                               this.chart1_label = response.data.data.lgaName;
                             this.chart1_data = response.data.data.receipt;
                             this.prevChart1_data = response.data.data.prevReceipt;
@@ -843,12 +844,11 @@
 
                 })
                     .then(response => {
-
+                        console.log(response.data.data.totalReceipt);
                         if(response.data.status === 'success'){
 
 
                             // metrics
-
                             this.metrics.totalGenerated = response.data.data.totalReceipt;   this.card_1 = false;
                             this.metrics.totalBank = response.data.data.bank;  this.card_2 = false;
                             this.metrics.overall = response.data.data.overall;    this.card_3 = false;

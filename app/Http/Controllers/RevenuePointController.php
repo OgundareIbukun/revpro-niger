@@ -76,6 +76,13 @@ use App\User;
 
         ]);
 
+        foreach($request->services as $service_id){
+            PointService::create([
+                'revenue_point_id' => $rev_point->id,
+                'service_id' => $service_id
+            ]);
+        }
+
         return response()->json([
             'status' => 'success',
             'data' => $rev_point
@@ -145,6 +152,16 @@ use App\User;
 
         ]);
 
+        PointService::where('revenue_point_id',$revenuepoint->id)->delete();
+        foreach($request->services as $service){
+            //dd($service);
+            PointService::create([
+                'revenue_point_id' => $revenuepoint->id,
+                'service_id' => $service
+            ]);
+
+        }
+
         return response()->json([
             'status' => 'success',
             'data' => $revenuepoint
@@ -162,6 +179,8 @@ use App\User;
     public function destroy(RevenuePoint $revenuepoint)
     {
         $revenuepoint->delete();
+
+        PointService::where('revenue_point_id',$revenuepoint->id)->delete();
 
         return response()->json([], 204);
     }

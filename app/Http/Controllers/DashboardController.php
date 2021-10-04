@@ -41,8 +41,11 @@ class DashboardController extends Controller
         if ($lastDay == substr($toDate, 8))
             $prevtoDate = date('Y-m-t', strtotime(substr($toDate, 0, 7) . ' -1 month'));
 
-        $services = Service::select('id', 'name')
-            ->get();
+        // $services = Service::select('id', 'name')
+        //     ->get();
+
+        $services = DB::table("services")->select('id','name')->get();
+        // return $services;
 
         $prevBS = Revenue::select('revenue_points.lga_id', 'revenues.updated_at', 'revenues.amount')
             ->leftjoin('revenue_points', 'revenues.revenue_point_id',  'revenue_points.id')
@@ -100,6 +103,10 @@ class DashboardController extends Controller
         $prevMonthName = Carbon::parse($prevfromDate)->format('F'); //Carbon::now()->subMonth()->format('F');
 //        $thisMonth =   Carbon::now()->format('m')  ;
 //        $prevMonth =   Carbon::now()->subMonth()->format('m');
+
+        // Overall revenue generated
+        $overall = Revenue::whereStatus('success')->sum('amount');
+        $overall += QuickPrintInvoice::sum('amount');
 
         $data = $lgaName = $receipt = $prevReceipt = $remittance = array();
 
@@ -203,7 +210,8 @@ class DashboardController extends Controller
 
             $sumSvr = $sumQP = 0;
 
-            $serviceName[$s] = $service['name'];
+            // $serviceName[$s] = $service['name'];
+            $serviceName[$s] = $service->name;
 
             foreach ($BS as $bs) {
 
@@ -217,7 +225,7 @@ class DashboardController extends Controller
 
             foreach ($QP as $qp) {
 
-                if ($service['id'] == $qp['service_id']) {
+                if ($service->id == $qp['service_id']) {
                     $sumSvr = $sumSvr + $qp['amount'];
                     //    $srvTotal = $srvTotal + $qp['amount'];
 
@@ -226,7 +234,7 @@ class DashboardController extends Controller
 
 
             $serviceData[$s]['sn'] = $s + 1;
-            $serviceData[$s]['serviceName'] = $service['name'];
+            $serviceData[$s]['serviceName'] = $service->name;
             $serviceData[$s]['receipt'] = $sumSvr;
             //  $serviceData[$s]['total_receipt'] =  $srvTotal;
 
@@ -238,6 +246,7 @@ class DashboardController extends Controller
             'status' => 'success',
             'data' => [
                 'receipt' => $receipt,
+                'overall' => $overall,
                 'prevReceipt' => $prevReceipt,
                 'lgaName' => $lgaName,
                 'lgaData' => $data,
