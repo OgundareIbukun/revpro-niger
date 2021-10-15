@@ -135,12 +135,12 @@
             </div>
 
             <div class="panel panel-default">
-                <div class="panel-heading">FILTER RESULT </div>
+                <div  class="panel-heading">FILTER RESULT </div>
                 <div class="panel-body">
                     <div class="row clearfix">
                         <form   v-on:submit.prevent="searchResult">
 
-                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div v-if="isAdmin" class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                 <select    v-model="lga_id" class="form-control"  >
                                     <option value=""  >Select LGA</option>
                                     <option v-for="lga in  lgas" v-bind:key="lga.id" v-bind:value="lga.id">
@@ -519,6 +519,7 @@
                 table_2: false,
                 table_3: true,
                 absolute: true,
+                isAdmin: false,
 
 
 //                page: 1,
@@ -713,13 +714,14 @@
                         if(response.data.status === 'success'){
 
                             // metrics
+                            // console.log(response);
 
                             this.metrics.totalGenerated = response.data.data.totalReceipt;   this.card_1 = false;
                             this.metrics.totalBank = response.data.data.bank;  this.card_2 = false;
                             this.metrics.overall = response.data.data.overall;    this.card_3 = false;
+                            // this.metrics.overall = 0;
                             this.metrics.agent = response.data.data.agent;    this.card_4 = false;
-
-
+                            
                               this.chart1_label = response.data.data.lgaName;
                             this.chart1_data = response.data.data.receipt;
                             this.prevChart1_data = response.data.data.prevReceipt;
@@ -842,12 +844,11 @@
 
                 })
                     .then(response => {
-
+                        console.log(response.data.data.totalReceipt);
                         if(response.data.status === 'success'){
 
 
                             // metrics
-
                             this.metrics.totalGenerated = response.data.data.totalReceipt;   this.card_1 = false;
                             this.metrics.totalBank = response.data.data.bank;  this.card_2 = false;
                             this.metrics.overall = response.data.data.overall;    this.card_3 = false;
@@ -944,10 +945,16 @@
             },
             getLgas: async function(){
                 try{
+                    // this.lga_id
                     await axios.get(`/state/${this.$state_id}/lgas`)
                         .then( response => {
-                            this.lgas = response.data.data
-
+                            this.lgas = response.data.data;
+                            if(this.lgas.length == 1){
+                                this.lga = this.lgas[0];
+                                this.searchResult();
+                            }else{
+                                this.isAdmin = true;
+                            }
 
                         })
                         .catch( (error) => {
@@ -957,7 +964,6 @@
                     console.log(e);
                 }
             },
-
 
 
         },

@@ -174,6 +174,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'RevenuePoints',
   data: function data() {
@@ -219,13 +233,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       agents: [],
       revPointIndex: -1,
       revenuepoints: [],
+      qprint_services: [],
+      service_types: [],
       revenuepoint: {
         'id': '',
         'name': '',
         'type': '',
         'state_id': '',
         'lga_id': '',
-        'lga_name': ''
+        'lga_name': '',
+        'service_types': []
       },
       revenuepointDefault: {
         'id': '',
@@ -265,9 +282,11 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       this.revenuepoint.type = item.type.split(',');
       this.revenuepoint.id = item.id;
+      this.revenuepoint.service_types = item.services;
       this.dialog = true;
       this.getRevenuePoints();
       this.getLgas();
+      this.getServices();
       $('#lga_col').addClass('hide');
     },
     deleteRevPoint: function deleteRevPoint(item) {
@@ -281,7 +300,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.dialog = false;
       this.$nextTick(function () {
         $('#lga_col').removeClass('hide');
-        _this.revenuepoint = Object.assign({}, _this.revenuepointDefault), _this.revPointIndex = -1;
+        _this.revenuepoint = Object.assign({}, _this.revenuepointDefault), _this.service_types = [], _this.revPointIndex = -1;
       });
     },
     save: function save() {
@@ -312,7 +331,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   'type': this.revenuepoint.type,
                   state_id: 5,
                   // this.revenuepoint.state_id,
-                  lga_id: this.revenuepoint.lga_id
+                  lga_id: this.revenuepoint.lga_id,
+                  services: this.revenuepoint.service_types
                 }).then(function (response) {
                   if (response.data.status == 'success') {
                     _this2.dialog = false;
@@ -375,7 +395,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.revenuepoint.name = revenuepoint.name;
       this.revenuepoint.type = revenuepoint.type.split(',');
       this.revenuepoint.state_id = this.$state_id, //revenuepoint.state_id;
-      this.revenuepoint.lga_id = revenuepoint.lga_id; //  $('#editRevenuePointsModal').modal('show');
+      this.revenuepoint.lga_id = revenuepoint.lga_id;
+      this.revenuepoint.service_types = revenuepoint.services; //  $('#editRevenuePointsModal').modal('show');
     },
     updateRevenuePoints: function () {
       var _updateRevenuePoints = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2() {
@@ -392,7 +413,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                   'type': this.revenuepoint.type,
                   state_id: this.$state_id,
                   // this.revenuepoint.state_id,
-                  lga_id: this.revenuepoint.lga_id
+                  lga_id: this.revenuepoint.lga_id,
+                  services: this.revenuepoint.service_types
                 }).then(function (response) {
                   if (response.data.status == 'success') {
                     //      $('#editRevenuePointsModal').modal('hide');
@@ -621,8 +643,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       return getRevPointTypes;
     }(),
-    getLgas: function () {
-      var _getLgas = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6() {
+    getServices: function () {
+      var _getServices = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee6() {
         var _this7 = this;
 
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee6$(_context6) {
@@ -631,8 +653,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               case 0:
                 _context6.prev = 0;
                 _context6.next = 3;
-                return axios.get("/state/".concat(this.$state_id, "/lgas")).then(function (response) {
-                  _this7.lgas = response.data.data;
+                return axios.get('/services/all').then(function (response) {
+                  var data = response.data.data; //const service_types = [];
+                  //  data.forEach(({name}) => {
+                  //      service_types.push(name);
+                  //  });
+
+                  _this7.qprint_services = data; //  this.service_types = service_types;
+                  //console.log(this.service_types);
                 })["catch"](function (error) {
                   console.log(error);
                 });
@@ -651,7 +679,46 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
                 return _context6.stop();
             }
           }
-        }, _callee6, this, [[0, 5]]);
+        }, _callee6, null, [[0, 5]]);
+      }));
+
+      function getServices() {
+        return _getServices.apply(this, arguments);
+      }
+
+      return getServices;
+    }(),
+    getLgas: function () {
+      var _getLgas = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee7() {
+        var _this8 = this;
+
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee7$(_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                _context7.prev = 0;
+                _context7.next = 3;
+                return axios.get("/state/".concat(this.$state_id, "/lgas")).then(function (response) {
+                  _this8.lgas = response.data.data;
+                })["catch"](function (error) {
+                  console.log(error);
+                });
+
+              case 3:
+                _context7.next = 8;
+                break;
+
+              case 5:
+                _context7.prev = 5;
+                _context7.t0 = _context7["catch"](0);
+                console.log(_context7.t0);
+
+              case 8:
+              case "end":
+                return _context7.stop();
+            }
+          }
+        }, _callee7, this, [[0, 5]]);
       }));
 
       function getLgas() {
@@ -673,6 +740,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     this.getRevenuePoints(); //  this.getStates();
 
     this.getRevPointTypes();
+    this.getServices();
   }
 });
 
@@ -1043,6 +1111,74 @@ var render = function() {
                                                         [
                                                           _vm._v(
                                                             "LGA is required"
+                                                          )
+                                                        ]
+                                                      )
+                                                    : _vm._e()
+                                                ],
+                                                1
+                                              ),
+                                              _vm._v(" "),
+                                              _c(
+                                                "v-col",
+                                                {
+                                                  attrs: {
+                                                    cols: "12",
+                                                    sm: "12",
+                                                    md: "12"
+                                                  }
+                                                },
+                                                [
+                                                  _c("v-select", {
+                                                    attrs: {
+                                                      rules: [
+                                                        function(v) {
+                                                          return (
+                                                            !!v ||
+                                                            "Rebvenue type is required"
+                                                          )
+                                                        }
+                                                      ],
+                                                      items:
+                                                        _vm.qprint_services,
+                                                      "menu-props": {
+                                                        maxHeight: "400"
+                                                      },
+                                                      label:
+                                                        "Select quick print services",
+                                                      multiple: "",
+                                                      hint:
+                                                        "Multiple selection allowed",
+                                                      "persistent-hint": ""
+                                                    },
+                                                    model: {
+                                                      value:
+                                                        _vm.revenuepoint
+                                                          .service_types,
+                                                      callback: function($$v) {
+                                                        _vm.$set(
+                                                          _vm.revenuepoint,
+                                                          "service_types",
+                                                          $$v
+                                                        )
+                                                      },
+                                                      expression:
+                                                        "revenuepoint.service_types"
+                                                    }
+                                                  }),
+                                                  _vm._v(" "),
+                                                  _vm.errors["type"]
+                                                    ? _c(
+                                                        "label",
+                                                        {
+                                                          staticClass: " error",
+                                                          staticStyle: {
+                                                            color: "red"
+                                                          }
+                                                        },
+                                                        [
+                                                          _vm._v(
+                                                            "Revenue type is required"
                                                           )
                                                         ]
                                                       )

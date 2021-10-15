@@ -13,7 +13,8 @@ use Illuminate\Http\Request;
  use App\Agent;
  use App\Revenue;
  use App\Lga;
- use App\User;
+use App\PointService;
+use App\User;
  use Illuminate\Support\Carbon;
  use Illuminate\Support\Facades\DB;
 
@@ -74,6 +75,13 @@ use Illuminate\Http\Request;
             'lga_id'=> $validate['lga_id'],
 
         ]);
+
+        foreach($request->services as $service_id){
+            PointService::create([
+                'revenue_point_id' => $rev_point->id,
+                'service_id' => $service_id
+            ]);
+        }
 
         return response()->json([
             'status' => 'success',
@@ -144,6 +152,16 @@ use Illuminate\Http\Request;
 
         ]);
 
+        PointService::where('revenue_point_id',$revenuepoint->id)->delete();
+        foreach($request->services as $service){
+            //dd($service);
+            PointService::create([
+                'revenue_point_id' => $revenuepoint->id,
+                'service_id' => $service
+            ]);
+
+        }
+
         return response()->json([
             'status' => 'success',
             'data' => $revenuepoint
@@ -161,6 +179,8 @@ use Illuminate\Http\Request;
     public function destroy(RevenuePoint $revenuepoint)
     {
         $revenuepoint->delete();
+
+        PointService::where('revenue_point_id',$revenuepoint->id)->delete();
 
         return response()->json([], 204);
     }
@@ -193,7 +213,6 @@ use Illuminate\Http\Request;
 
     public function listRevPoint()
     {
-
         $user =  Auth::user();
         $lga_id =  $user->lga_id;
         //  get revenue point for director of revenuE and HOD
@@ -229,6 +248,27 @@ use Illuminate\Http\Request;
           //  $data[$i]['state_id'] = $rvpt['lga']['state']['id'];
             $data[$i]['lga_id'] = $rvpt['lga']['id'];
             $data[$i]['lga_name'] = $rvpt['lga']['name'];
+            $services = PointService::where('revenue_point_id',$rvpt['id'])->pluck('service_id');
+            
+            
+            $service_details = [];
+            if(!empty($services)){
+                foreach($services as $service){
+                    $query = Service::where('id',$service);
+
+                    if($query->exists()){
+                      $serv =  $query->first(); 
+                        $service_details[] = [
+                            'key' => $serv->name,
+                            'value' => $service
+                        ];
+                    }
+
+    
+                }
+            }
+            
+            $data[$i]['services'] = $service_details;
             $i++;
 
         }
@@ -244,6 +284,7 @@ use Illuminate\Http\Request;
 
 
     }
+
 
 
     public  function getRevPointInLga(Request $request){

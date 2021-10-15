@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class ApiPassportAuth extends Controller
 {
-    public function login(){
+     public function login(){
         $validate = request()->validate([
             'email' => 'sometimes|required|string|email|max:255',
             'phone' => 'sometimes|required',

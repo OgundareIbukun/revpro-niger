@@ -41,8 +41,11 @@ class DashboardController extends Controller
         if ($lastDay == substr($toDate, 8))
             $prevtoDate = date('Y-m-t', strtotime(substr($toDate, 0, 7) . ' -1 month'));
 
-        $services = Service::select('id', 'name')
-            ->get();
+        // $services = Service::select('id', 'name')
+        //     ->get();
+
+        $services = DB::table("services")->select('id','name')->get();
+        // return $services;
 
         $prevBS = Revenue::select('revenue_points.lga_id', 'revenues.updated_at', 'revenues.amount')
             ->leftjoin('revenue_points', 'revenues.revenue_point_id',  'revenue_points.id')
@@ -82,20 +85,28 @@ class DashboardController extends Controller
 //            ->whereBetween(DB::raw('date(remittances.updated_at)'), [DB::raw('date("' . $fromDate . '")'), DB::raw('date("' . $toDate . '")')])
 //            ->get();
 
-        // Overall revenue generated
-            $overall = Revenue::whereStatus('success')->sum('amount');
-            $overall += QuickPrintInvoice::sum('amount');
+        $user_lga_id = Auth::user()->lga_id;
+        $agent = Agent::when( ( Auth::user()->role_id == env('ADMIN') || Auth::user()->role_id == env('SUPER_ADMIN') ||  Auth::user()->role_id == env('COMMISSIONER'))== false, function($query) use ($user_lga_id){
+            return $query->join('users','agents.id','=','users.userable_id')
+            ->where('users.lga_id',$user_lga_id);
+        })
+        ->count();
 
 
-        $agent = Agent::count();
-
-
-        $lgas = Lga::where('state_id', env("STATE_ID"))->get();
+        $lgas = Lga::where('state_id', env("STATE_ID"))
+        ->when( ( Auth::user()->role_id == env('ADMIN') || Auth::user()->role_id == env('SUPER_ADMIN') ||  Auth::user()->role_id == env('COMMISSIONER'))== false, function($query) use ($user_lga_id){
+            return $query->where('id', $user_lga_id );
+        })
+        ->get();
 
         $thisMonthName = Carbon::parse($fromDate)->format('F'); // Carbon::now()->format('F');
         $prevMonthName = Carbon::parse($prevfromDate)->format('F'); //Carbon::now()->subMonth()->format('F');
 //        $thisMonth =   Carbon::now()->format('m')  ;
 //        $prevMonth =   Carbon::now()->subMonth()->format('m');
+
+        // Overall revenue generated
+        $overall = Revenue::whereStatus('success')->sum('amount');
+        $overall += QuickPrintInvoice::sum('amount');
 
         $data = $lgaName = $receipt = $prevReceipt = $remittance = array();
 
@@ -199,7 +210,8 @@ class DashboardController extends Controller
 
             $sumSvr = $sumQP = 0;
 
-            $serviceName[$s] = $service['name'];
+            // $serviceName[$s] = $service['name'];
+            $serviceName[$s] = $service->name;
 
             foreach ($BS as $bs) {
 
@@ -213,7 +225,7 @@ class DashboardController extends Controller
 
             foreach ($QP as $qp) {
 
-                if ($service['id'] == $qp['service_id']) {
+                if ($service->id == $qp['service_id']) {
                     $sumSvr = $sumSvr + $qp['amount'];
                     //    $srvTotal = $srvTotal + $qp['amount'];
 
@@ -222,7 +234,7 @@ class DashboardController extends Controller
 
 
             $serviceData[$s]['sn'] = $s + 1;
-            $serviceData[$s]['serviceName'] = $service['name'];
+            $serviceData[$s]['serviceName'] = $service->name;
             $serviceData[$s]['receipt'] = $sumSvr;
             //  $serviceData[$s]['total_receipt'] =  $srvTotal;
 
@@ -233,8 +245,8 @@ class DashboardController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => [
-                'overall'=> $overall,
                 'receipt' => $receipt,
+                'overall' => $overall,
                 'prevReceipt' => $prevReceipt,
                 'lgaName' => $lgaName,
                 'lgaData' => $data,
@@ -250,7 +262,6 @@ class DashboardController extends Controller
 
 
     }
-
 
     // Revenue in each Lgas
     public function RevPoint(Request $request)

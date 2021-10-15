@@ -50,4 +50,9 @@ class RevenuePoint extends Model
 //        ][$attribute];
 //    }
 
+public function revenue_point_services(){
+    return $this->hasMany(PointService::class,'revenue_point_id','id');
+}
+
+
 }

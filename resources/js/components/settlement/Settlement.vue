@@ -1,6 +1,7 @@
 <template>
 
     <div>
+        
         <div class="page-heading">
             <h1><small> Settlement Details</small><br>SETTLEMENT MANAGEMENT</h1>
             <ol class="breadcrumb">
@@ -14,6 +15,84 @@
                 <li class="active">Overview</li>
             </ol>
         </div>
+
+        <div class="panel panel-default">
+                <div class="panel-heading">FILTER RESULT </div>
+                <div class="panel-body">
+                    <div class="row clearfix">
+                        <form   v-on:submit.prevent="getSettlement">
+
+                            <div v-if="isAdmin" class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                <select    v-model="lga_id" class="form-control"  >
+                                    <option value=""  >Select LGA</option>
+                                    <option v-for="lga in  lgas" v-bind:key="lga.id" v-bind:value="lga.id">
+                                        {{ lga.name }}
+                                    </option>
+                                </select>
+
+
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-default" type="button" title="Toggle" data-toggle>
+                                                <i class="fa fa-calendar">
+                                                    <span aria-hidden="true" class="sr-only">Toggle</span>
+                                                </i>
+                                            </button>
+                                        </div>
+                                        <flat-pickr
+                                                v-model="fromDate"
+                                                :config="config"
+                                                class="form-control"
+                                                placeholder="FROM DATE"
+                                                name="date">
+                                        </flat-pickr>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-btn">
+                                            <button class="btn btn-default" type="button" title="Toggle" data-toggle>
+                                                <i class="fa fa-calendar">
+                                                    <span aria-hidden="true" class="sr-only">Toggle</span>
+                                                </i>
+                                            </button>
+                                        </div>
+                                        <flat-pickr
+                                                v-model="toDate"
+                                                :config="config"
+                                                class="form-control"
+                                                placeholder="TO DATE"
+                                                name="date">
+                                        </flat-pickr>
+
+                                </div>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-6 col-xs-12">
+                                <div class="form-group">
+                                    <button  class="m-t-8 btn btn-primary btn-md" type="submit">
+                                        Filter
+                                        <i class="fa fa-search"> </i>
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+            </div>
 
         <div class="page-body">
 
@@ -158,16 +237,31 @@
     export default {
         name: "Settlement",
 
+         components:{
+            flatPickr,
+
+        },
+
         data(){
             return {
 
                 table_1:true,
                 absolute: true,
+                isAdmin:false,
+                fromDate:'',
+                toDate:'',
 
                 page: 1,
                 pageCount: 0,
                 itemsPerPage: 10,
                 search:'',
+                config: {
+                    wrap: true, // set wrap to true only when using 'input-group'
+                    altFormat: 'M j, Y',
+                    altInput: true,
+                    dateFormat: 'Y-m-d',
+
+                },
                 Headers: [
 
                     { text: '#', value: 'sn' },
@@ -210,7 +304,7 @@
             getSettlement: async function(){
 
                 try{
-                    await axios.get('/settlement')
+                    await axios.get('/settlement?lga_id='+this.lga_id+'&fromDate='+this.fromDate+'&toDate='+this.toDate)
                         .then( response => {
                             if(response.data.status == 'success'){
                                 // this.metrics.unpaid_invoice = response.data.data.unpaid_invoice;
@@ -236,10 +330,33 @@
                 }
 
             },
+             getLgas: async function(){
+                try{
+                    await axios.get(`/state/${this.$state_id}/lgas`)
+                        .then( response => {
+                            this.lgas = response.data.data
+                            if(this.lgas.length == 1){
+                                this.lga_id = this.lgas[0];
+                                // console.log(this.lgas[0]['id'])
+                            }else{
+                                this.isAdmin = true;
+                            }
+                            // console.log(this.lgas);
+                            this.getSettlement();
+
+                        })
+                        .catch( (error) => {
+                            console.log(error)
+                        });
+                }catch(e){
+                    console.log(e);
+                }
+            },
 
         },
         mounted() {
-            this.getSettlement();
+            this.getLgas();
+
         }
     }
 </script>

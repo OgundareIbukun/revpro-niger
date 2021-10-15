@@ -232,6 +232,14 @@ class ServiceController extends Controller
         ]);
     }
 
+    public function getServices(){
+        $services = Service::select('id as value','name as text')->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $services
+        ]);
+    }
+
 
 
 

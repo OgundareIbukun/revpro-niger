@@ -110,6 +110,20 @@
                                                         <label style="color:red" class="error" v-if="errors['lga_id']">LGA is required</label>
                                                     </v-col>
 
+                                                    <v-col cols="12" sm="12" md="12">
+                                                        <v-select :rules="[v => !!v || 'Rebvenue type is required']"
+                                                                  v-model="revenuepoint.service_types"
+                                                                  :items="qprint_services"
+
+                                                                  :menu-props="{ maxHeight: '400' }"
+                                                                  label="Select quick print services"
+                                                                  multiple
+                                                                  hint="Multiple selection allowed"
+                                                                  persistent-hint
+                                                        ></v-select>
+                                                        <label style="color:red"  class=" error" v-if="errors['type']">Revenue type is required</label>
+                                                    </v-col>
+
                                                 </v-row>
                                             </v-container>
                                         </v-card-text>
@@ -190,13 +204,16 @@
                 agents:[],
                 revPointIndex: -1,
                 revenuepoints: [],
+                qprint_services:[],
+                service_types:[],
                 revenuepoint: {
                     'id' : '',
                     'name' : '',
                     'type' : '',
                     'state_id' : '',
                     'lga_id' : '',
-                    'lga_name' : ''
+                    'lga_name' : '',
+                    'service_types':[]
                 },
 
                 revenuepointDefault: {
@@ -242,10 +259,12 @@
              //   this.revenuepoint.state_id = item.state_id;
                 this.revenuepoint.type =  item.type.split(',');
                 this.revenuepoint.id = item.id;
+                this.revenuepoint.service_types = item.services;
                 this.dialog = true;
 
                    this.getRevenuePoints();
                     this.getLgas();
+                    this.getServices();
                     $('#lga_col').addClass('hide');
             },
             deleteRevPoint (item) {
@@ -262,6 +281,7 @@
                 this.$nextTick(() => {
                     $('#lga_col').removeClass('hide');
                     this.revenuepoint = Object.assign({}, this.revenuepointDefault),
+                    this.service_types = [],
                         this.revPointIndex = -1
 
 
@@ -290,6 +310,7 @@
                         'type' :  this.revenuepoint.type,
                         state_id :  5,            // this.revenuepoint.state_id,
                         lga_id :  this.revenuepoint.lga_id,
+                        services: this.revenuepoint.service_types
                     })
                         .then(response => {
                             if(response.data.status == 'success'){
@@ -334,6 +355,8 @@
                 this.revenuepoint.type = revenuepoint.type.split(',');
                 this.revenuepoint.state_id = this.$state_id,    //revenuepoint.state_id;
                 this.revenuepoint.lga_id = revenuepoint.lga_id;
+                this.revenuepoint.service_types = revenuepoint.services;
+
 
               //  $('#editRevenuePointsModal').modal('show');
             },
@@ -344,6 +367,7 @@
                         'type': this.revenuepoint.type,
                         state_id :  this.$state_id,    // this.revenuepoint.state_id,
                         lga_id: this.revenuepoint.lga_id,
+                        services: this.revenuepoint.service_types
                     })
                         .then(response => {
                             if(response.data.status == 'success'){
@@ -466,6 +490,29 @@
                     console.log(e);
                 }
             },
+            getServices: async function(){
+                try{
+                    await axios.get('/services/all')
+                        .then(response => {
+                             const data = response.data.data;
+                             //const service_types = [];
+
+                            //  data.forEach(({name}) => {
+                            //      service_types.push(name);
+                            //  });
+                             this.qprint_services = data;
+                            //  this.service_types = service_types;
+                            //console.log(this.service_types);
+
+
+                        })
+                        .catch( (error) => {
+                            console.log(error)
+                        });
+                }catch(e){
+                    console.log(e);
+                }
+            },
 
 
             getLgas: async function(){
@@ -494,6 +541,7 @@
             this.getRevenuePoints();
           //  this.getStates();
             this.getRevPointTypes();
+            this.getServices();
         },
     }
 
