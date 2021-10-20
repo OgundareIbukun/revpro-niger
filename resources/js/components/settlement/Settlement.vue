@@ -250,6 +250,7 @@
                 isAdmin:false,
                 fromDate:'',
                 toDate:'',
+                lga_id:'',
 
                 page: 1,
                 pageCount: 0,

@@ -435,6 +435,7 @@
                // menu: false,
                 modal: false,
                 menu2: false,
+                amountCard:'',
 
                 page:1,
                 pageCount: 0,
