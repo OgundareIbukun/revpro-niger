@@ -215,8 +215,8 @@ class DashboardController extends Controller
 
             foreach ($BS as $bs) {
 
-                if ($service['id'] == $bs['service_id']) {
-                    $sumSvr = $sumSvr + $bs['amount'];
+                if ($service['id'] == $bs->service_id) {
+                    $sumSvr = $sumSvr + $bs->amount;
                     // $srvTotal = $srvTotal + $bs['amount'];
 
                 }
@@ -225,8 +225,8 @@ class DashboardController extends Controller
 
             foreach ($QP as $qp) {
 
-                if ($service->id == $qp['service_id']) {
-                    $sumSvr = $sumSvr + $qp['amount'];
+                if ($service->id == $qp->service_id) {
+                    $sumSvr = $sumSvr + $qp->amount;
                     //    $srvTotal = $srvTotal + $qp['amount'];
 
                 }
