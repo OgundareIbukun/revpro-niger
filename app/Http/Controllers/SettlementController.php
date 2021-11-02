@@ -77,7 +77,7 @@ class settlementController extends Controller
 
                 foreach($Bs as $bs){
 
-                    if($month == substr($bs->updated_at,5,2)  &&   $year == substr($bs['updated_at'],0,4))
+                    if($month == substr($bs->updated_at,5,2)  &&   $year == substr($bs->updated_at,0,4))
                     {
                            if($bs->payment_type == 'card' )
                                $card = $card + $bs['amount'];
@@ -85,18 +85,7 @@ class settlementController extends Controller
                                  $bank = $bank + $bs->amount;
                     }
 
-                    foreach($Remits as $remit){
-
-                        if($month == substr($remit['updated_at'],5,2)  &&   $year == substr($remit['updated_at'],0,4))
-                        {
-                            if($remit->payment_type == 'card' )
-                                $card = $card + $remit['amount'];
-                            else if($bs->payment_type == 'bank' )
-                                $bank = $bank + $remit['amount'];
-                        }
-       
-                    }
-       
+                    
 
                 }
 
