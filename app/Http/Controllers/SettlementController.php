@@ -85,20 +85,22 @@ class settlementController extends Controller
                                  $bank = $bank + $bs->amount;
                     }
 
+                    foreach($Remits as $remit){
+
+                        if($month == substr($remit['updated_at'],5,2)  &&   $year == substr($remit['updated_at'],0,4))
+                        {
+                            if($remit->payment_type == 'card' )
+                                $card = $card + $remit['amount'];
+                            else if($bs->payment_type == 'bank' )
+                                $bank = $bank + $remit['amount'];
+                        }
+       
+                    }
+       
+
                 }
 
-             foreach($Remits as $remit){
-
-                 if($month == substr($remit['updated_at'],5,2)  &&   $year == substr($remit['updated_at'],0,4))
-                 {
-                     if($remit->payment_type == 'card' )
-                         $card = $card + $remit['amount'];
-                     else if($bs->payment_type == 'bank' )
-                         $bank = $bank + $remit['amount'];
-                 }
-
-             }
-
+             
 
              // card  txn fee
 
