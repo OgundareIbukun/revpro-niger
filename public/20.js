@@ -267,6 +267,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       isAdmin: false,
       fromDate: '',
       toDate: '',
+      lga_id: '',
       page: 1,
       pageCount: 0,
       itemsPerPage: 10,

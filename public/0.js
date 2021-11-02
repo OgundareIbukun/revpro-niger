@@ -449,6 +449,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       // menu: false,
       modal: false,
       menu2: false,
+      amountCard: '',
       page: 1,
       pageCount: 0,
       itemsPerPage: 15,

@@ -105,8 +105,20 @@ class DashboardController extends Controller
 //        $prevMonth =   Carbon::now()->subMonth()->format('m');
 
         // Overall revenue generated
-        $overall = Revenue::whereStatus('success')->sum('amount');
-        $overall += QuickPrintInvoice::sum('amount');
+        
+        $overall = Revenue::whereStatus('success')
+                    ->when(!((Auth::user()->role_id == env('ADMIN')) || (Auth::user()->role_id == env('SUPER_ADMIN')) ||  (Auth::user()->role_id == env('COMMISSIONER'))),function($query){
+                        return $query->join('revenue_points','revenues.revenue_point_id','=','revenue_points.id')
+                        ->where('revenue_points.lga_id','=',Auth::user()->lga_id);
+                
+                    })
+                    ->sum('revenues.amount');
+        $overall += QuickPrintInvoice::when(!((Auth::user()->role_id == env('ADMIN')) || (Auth::user()->role_id == env('SUPER_ADMIN')) ||  (Auth::user()->role_id == env('COMMISSIONER'))),function($query){
+            return $query->join('revenue_points','quick_print_invoices.revenue_point_id','=','revenue_points.id')
+            ->where('revenue_points.lga_id','=',Auth::user()->lga_id);
+    
+        })
+        ->sum('quick_print_invoices.amount');
 
         $data = $lgaName = $receipt = $prevReceipt = $remittance = array();
 
@@ -215,8 +227,8 @@ class DashboardController extends Controller
 
             foreach ($BS as $bs) {
 
-                if ($service['id'] == $bs['service_id']) {
-                    $sumSvr = $sumSvr + $bs['amount'];
+                if ($service->id == $bs->service_id) {
+                    $sumSvr = $sumSvr + $bs->amount;
                     // $srvTotal = $srvTotal + $bs['amount'];
 
                 }
@@ -225,8 +237,8 @@ class DashboardController extends Controller
 
             foreach ($QP as $qp) {
 
-                if ($service->id == $qp['service_id']) {
-                    $sumSvr = $sumSvr + $qp['amount'];
+                if ($service->id == $qp->service_id) {
+                    $sumSvr = $sumSvr + $qp->amount;
                     //    $srvTotal = $srvTotal + $qp['amount'];
 
                 }
@@ -255,7 +267,8 @@ class DashboardController extends Controller
                 'agent' => $agent,
                 'prevMonthName' => $prevMonthName,
                 'thisMonthName' => $thisMonthName,
-                'service' => $serviceData
+                'service' => $serviceData,
+                'test' => Auth::user()->role_id
             ]
             // 'data'=>$Remits
         ]);

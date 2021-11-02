@@ -317,4 +317,4 @@ Route::get('/banks', function(){
 
 
    });
-//    Route::get('excel','ExcelController@createMda');
+   Route::get('excel','ExcelController@createMda');
