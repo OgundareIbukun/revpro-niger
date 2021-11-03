@@ -22,7 +22,7 @@ class settlementController extends Controller
   $toDate = $request->toDate;
 
     $Bs= Revenue::select('revenues.amount','revenues.payment_type','revenues.updated_at')
-          ->when($request->lga_id,function($query) use ($lga_id){
+          ->when(($request->lga_id !== null ),function($query) use ($lga_id){
               return  $query->join('revenue_points','revenues.revenue_point_id','=','revenue_points.id')
                       ->join('lgas','revenue_points.lga_id','=','lgas.id')
                       ->where('lgas.id','=',$lga_id);
@@ -44,7 +44,7 @@ class settlementController extends Controller
 
              // get paid invoices at bank and card by agents
     $Remits = Remittance::select('remittances.amount','remittances.payment_type','remittances.updated_at')
-          ->when($request->lga_id, function($query) use ($lga_id){
+          ->when(($request->lga_id !== null), function($query) use ($lga_id){
               return $query->join('lgas','remittances.lga_id','=','lgas.id')
               ->where('remittances.lga_id',$lga_id);
           })
@@ -80,7 +80,7 @@ class settlementController extends Controller
                     if($month == substr($bs->updated_at,5,2)  &&   $year == substr($bs->updated_at,0,4))
                     {
                            if($bs->payment_type == 'card' )
-                               $card = $card + $bs['amount'];
+                               $card = $card + $bs->amount;
                              else if($bs->payment_type == 'bank' )
                                  $bank = $bank + $bs->amount;
                     }
